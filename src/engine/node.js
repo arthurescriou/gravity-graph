@@ -73,8 +73,8 @@ const friction = (val) => val > 0
 const getRandomInt = (max) => Math.random() * Math.floor(max);
 
 const randomPositionVect = ({height, width}) => ({
-  x: getRandomInt(height - 50) + 50,
-  y: getRandomInt(width - 50) + 50
+  x: getRandomInt(width - 50) + 50,
+  y: getRandomInt(height - 50) + 50
 })
 
 const randomSpeedVect = (max) => ({
