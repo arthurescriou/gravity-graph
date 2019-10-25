@@ -1,7 +1,18 @@
 <template>
 <div class="home">
-  <div style="position: absolute;">
-    TotalSpeed: {{totalSpeed}}
+  <div style="position: absolute; display: flex; flex-direction: column;">
+    <div>
+      TotalSpeed: {{totalSpeed}}
+    </div>
+    <div>
+      MoySpeed: {{moySpeed}}
+    </div>
+    <div>
+      MaxSpeed: {{maxSpeed}}
+    </div>
+    <div>
+      MinSpeed: {{minSpeed}}
+    </div>
   </div>
   <img src="../assets/truc.png" ref="image" style="visibility: hidden; position: absolute;">
   <canvas ref="canvas" id="canvas" width="1400" height="900"></canvas>
@@ -12,7 +23,10 @@
 import {
   initNodes,
   nextStep,
-  totalSpeed
+  totalSpeed,
+  moySpeed,
+  minSpeed,
+  maxSpeed,
 } from '@/engine/node.js'
 export default {
   mounted() {
@@ -25,7 +39,7 @@ export default {
       this.image.height = 100
       this.image.width = 100
       this.resize()
-      this.nodes = initNodes(10, {
+      this.nodes = initNodes(150, {
         height: this.windowHeight,
         width: this.windowWidth
       })
@@ -43,6 +57,10 @@ export default {
       speedY: 5,
       nodes: [],
       totalSpeed: 0,
+      moySpeed: 0,
+      minSpeed: 0,
+      maxSpeed: 0,
+
     }
   },
   methods: {
@@ -63,7 +81,14 @@ export default {
         ctx.stroke()
       })
       this.totalSpeed = totalSpeed(this.nodes)
+      this.moySpeed = moySpeed(this.nodes)
+      this.minSpeed = minSpeed(this.nodes)
+      this.maxSpeed = maxSpeed(this.nodes)
 
+      if (this.maxSpeed < 0.2) {
+        console.log('STAAAAAAAAHP')
+        return
+      }
       window.requestAnimationFrame(this.draw)
     },
     resize() {

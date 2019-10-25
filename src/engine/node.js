@@ -1,6 +1,6 @@
-const FRICTION = 0.2
-const K = 0.1
-const neglict = (val) => Math.abs(val) < 0.001
+const FRICTION = 0.1
+const K = 0.01
+const neglict = (val) => Math.abs(val) < 0.01
   ? 0
   : val
 
@@ -32,14 +32,18 @@ const vectorEdgeRepulsion = (node, {height, width}) => {
     x: 0,
     y: 0
   }
-  if (posY < 0)
-    vectorEdgeRepulsion.y += edgeRepulsion(0, posY)
-  if (posX < 0)
-    vectorEdgeRepulsion.x += edgeRepulsion(0, posX)
-  if (posY > height)
-    vectorEdgeRepulsion.y += edgeRepulsion(height, posY)
-  if (posX > width)
-    vectorEdgeRepulsion.x += edgeRepulsion(width, posX)
+  const minY = 150
+  const minX = 150
+  const maxY = height - 150
+  const maxX = width - 150
+  if (posY < minY)
+    vectorEdgeRepulsion.y += edgeRepulsion(minY, posY)
+  if (posX < minX)
+    vectorEdgeRepulsion.x += edgeRepulsion(minX, posX)
+  if (posY > maxY)
+    vectorEdgeRepulsion.y += edgeRepulsion(maxY, posY)
+  if (posX > maxX)
+    vectorEdgeRepulsion.x += edgeRepulsion(maxX, posX)
   return vectorEdgeRepulsion
 }
 const nextStep = (nodes, {height, width}) => nodes.map(node => {
@@ -50,8 +54,8 @@ const nextStep = (nodes, {height, width}) => nodes.map(node => {
     id: node.id,
     pos: move(node.pos, node.speed),
     speed: {
-      x: frictionX + repulX + edgeRepulsionX,
-      y: frictionY + repulY + edgeRepulsionY
+      x: Math.min(15, frictionX + repulX + edgeRepulsionX),
+      y: Math.min(15, frictionY + repulY + edgeRepulsionY)
     }
   }
 })
@@ -105,9 +109,15 @@ const initNodestest = (size, {height, width}) => [
 ]
 
 const totalSpeed = (nodes) => nodes.map(n => neglict(Math.abs(n.speed.x) + Math.abs(n.speed.y))).reduce((acc, val) => acc + val, 0)
+const moySpeed = (nodes) => nodes.map(n => neglict(Math.abs(n.speed.x) + Math.abs(n.speed.y))).reduce((acc, val) => acc + val, 0)/nodes.length
+const maxSpeed = (nodes) => Math.max(...nodes.map(n => neglict(Math.abs(n.speed.x) + Math.abs(n.speed.y))))
+const minSpeed = (nodes) => Math.min(...nodes.map(n => neglict(Math.abs(n.speed.x) + Math.abs(n.speed.y))))
 
 export {
   initNodes,
   nextStep,
-  totalSpeed
+  totalSpeed,
+  moySpeed,
+  maxSpeed,
+  minSpeed
 }
