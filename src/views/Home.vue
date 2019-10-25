@@ -1,11 +1,19 @@
 <template>
 <div class="home">
+  <div style="position: absolute;">
+    TotalSpeed: {{totalSpeed}}
+  </div>
   <img src="../assets/truc.png" ref="image" style="visibility: hidden; position: absolute;">
   <canvas ref="canvas" id="canvas" width="1400" height="900"></canvas>
 </div>
 </template>
 
 <script>
+import {
+  initNodes,
+  nextStep,
+  totalSpeed
+} from '@/engine/node.js'
 export default {
   mounted() {
     this.$nextTick(function() {
@@ -17,6 +25,10 @@ export default {
       this.image.height = 100
       this.image.width = 100
       this.resize()
+      this.nodes = initNodes(10, {
+        height: this.windowHeight,
+        width: this.windowWidth
+      })
       this.image.onload = () => this.draw()
     })
   },
@@ -29,18 +41,29 @@ export default {
       posY: 10,
       speedX: 5,
       speedY: 5,
+      nodes: [],
+      totalSpeed: 0,
     }
   },
   methods: {
     draw() {
       const ctx = canvas.getContext('2d');
       ctx.clearRect(0, 0, this.windowWidth, this.windowHeight);
-      ctx.strokeRect(this.posX, this.posY, 100, 100);
-      ctx.drawImage(this.image, this.posX, this.posY, 100, 100)
-      if (this.posY + 100 > this.windowHeight || this.posY < 0) this.speedY *= -1
-      if (this.posX + 100 > this.windowWidth || this.posX < 0) this.speedX *= -1
-      this.posX += this.speedX
-      this.posY += this.speedY
+
+      this.nodes = nextStep(this.nodes, {
+        height: this.windowHeight,
+        width: this.windowWidth
+      })
+
+      this.nodes.forEach(node => {
+        ctx.beginPath();
+
+        ctx.arc(node.pos.x, node.pos.y, 5, 0, 2 * Math.PI);
+        ctx.fill()
+        ctx.stroke()
+      })
+      this.totalSpeed = totalSpeed(this.nodes)
+
       window.requestAnimationFrame(this.draw)
     },
     resize() {
