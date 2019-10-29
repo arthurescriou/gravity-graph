@@ -21,6 +21,20 @@
 
 <script>
 import {
+  FRICTION,
+  K,
+  DISTMIN,
+  A,
+  NEGLICT,
+  NODESSIZE,
+  EDGESSIZE,
+} from '@/values'
+import {
+  getRandomInt,
+  distinct,
+  distinctEdge,
+} from '@/engine/utils.js'
+import {
   initNodes,
   nextStep,
   totalSpeed,
@@ -30,21 +44,7 @@ import {
 } from '@/engine/node.js'
 export default {
   mounted() {
-    this.$nextTick(function() {
-      window.addEventListener('resize', this.resize);
-
-      const canvas = this.$refs['canvas']
-      this.canvas = canvas
-      this.image = this.$refs['image']
-      this.image.height = 100
-      this.image.width = 100
-      this.resize()
-      this.nodes = initNodes(150, {
-        height: this.windowHeight,
-        width: this.windowWidth
-      })
-      this.image.onload = () => this.draw()
-    })
+    this.init()
   },
   data() {
     return {
@@ -56,14 +56,32 @@ export default {
       speedX: 5,
       speedY: 5,
       nodes: [],
+      edges: [],
       totalSpeed: 0,
       moySpeed: 0,
       minSpeed: 0,
       maxSpeed: 0,
-
     }
   },
   methods: {
+    init() {
+      window.addEventListener('resize', this.resize);
+
+      const nodesSize = NODESSIZE
+      const edgesSize = EDGESSIZE
+      this.edges = this.getRandomEdges(edgesSize, nodesSize)
+      const canvas = this.$refs['canvas']
+      this.canvas = canvas
+      this.image = this.$refs['image']
+      this.image.height = 100
+      this.image.width = 100
+      this.resize()
+      this.nodes = initNodes(nodesSize, {
+        height: this.windowHeight,
+        width: this.windowWidth
+      })
+      this.image.onload = () => this.draw()
+    },
     draw() {
       const ctx = canvas.getContext('2d');
       ctx.clearRect(0, 0, this.windowWidth, this.windowHeight);
@@ -71,13 +89,21 @@ export default {
       this.nodes = nextStep(this.nodes, {
         height: this.windowHeight,
         width: this.windowWidth
-      })
-
+      }, this.edges)
       this.nodes.forEach(node => {
         ctx.beginPath();
-
         ctx.arc(node.pos.x, node.pos.y, 5, 0, 2 * Math.PI);
         ctx.fill()
+        ctx.stroke()
+      })
+      this.edges.forEach(edge => {
+        const first = edge[0]
+        const second = edge[1]
+        const fNode = this.nodes[first]
+        const sNode = this.nodes[second]
+        ctx.beginPath();
+        ctx.moveTo(fNode.pos.x, fNode.pos.y);
+        ctx.lineTo(sNode.pos.x, sNode.pos.y);
         ctx.stroke()
       })
       this.totalSpeed = totalSpeed(this.nodes)
@@ -85,7 +111,7 @@ export default {
       this.minSpeed = minSpeed(this.nodes)
       this.maxSpeed = maxSpeed(this.nodes)
 
-      if (this.maxSpeed < 0.2) {
+      if (this.maxSpeed == 0) {
         console.log('STAAAAAAAAHP')
         return
       }
@@ -103,6 +129,16 @@ export default {
 
     getWindowHeight(event) {
       this.windowHeight = document.documentElement.clientHeight;
+    },
+    getRandomEdges(numEdges, nodesSize) {
+      return new Array(numEdges).fill(0)
+        .map((_) => {
+          const ret = [getRandomInt(nodesSize), getRandomInt(nodesSize)]
+          ret.sort((a, b) => a - b)
+          return ret
+        })
+        .filter(t => t[0] != t[1])
+        .filter(distinctEdge)
     }
   },
   beforeDestroy() {
