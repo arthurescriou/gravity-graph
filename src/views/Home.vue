@@ -13,6 +13,14 @@
     <div>
       MinSpeed: {{minSpeed}}
     </div>
+    <div v-if="highligtedNode!=-1" class="info">
+      <div v-for="key in Object.keys(nodes[highligtedNode])" class="value">
+        {{key}}: {{nodes[highligtedNode][key]}}
+      </div>
+      <div class="value">
+        neihgbours: {{findNeighbours(edges, nodes[highligtedNode])}}
+      </div>
+    </div>
   </div>
   <img src="../assets/truc.png" ref="image" style="visibility: hidden; position: absolute;">
   <canvas ref="canvas" id="canvas" width="1400" height="900"></canvas>
@@ -201,7 +209,7 @@ export default {
         .filter(distinctEdge)
     },
     findNeighbours(edges, node) {
-      return edges.filter(e => e.includes(node.id)).reduce((acc, val) => acc.concat(val), []).filter(num => num != node.id)
+      return edges.filter(e => e.includes(node.id)).reduce((acc, val) => acc.concat(val), []).filter(num => num != node.id).sort((a, b) => a - b)
     }
   },
   beforeDestroy() {
