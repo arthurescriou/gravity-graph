@@ -61,6 +61,8 @@ export default {
       moySpeed: 0,
       minSpeed: 0,
       maxSpeed: 0,
+      highligtedNode: -1,
+      highligtedNeighbours: [],
     }
   },
   methods: {
@@ -76,6 +78,22 @@ export default {
       this.image.height = 100
       this.image.width = 100
       this.resize()
+      canvas.onmousemove = (e) => {
+        const hover = this.nodes.filter(node => (Math.abs(node.pos.x - e.clientX) + Math.abs(node.pos.y - e.clientY)) < 5)
+        if (hover.length == 1) {
+          const node = hover[0]
+          this.highligtedNode = node.id
+          this.highligtedNeighbours = this.findNeighbours(this.edges, node)
+          window.requestAnimationFrame(this.draw)
+        } else {
+          const previous = this.highligtedNode
+          this.highligtedNode = -1
+          this.highligtedNeighbours = []
+          if (previous != -1) {
+            window.requestAnimationFrame(this.draw)
+          }
+        }
+      }
       this.nodes = initNodes(nodesSize, {
         height: this.windowHeight,
         width: this.windowWidth
@@ -92,6 +110,18 @@ export default {
       }, this.edges)
       this.nodes.forEach(node => {
         ctx.beginPath();
+        if (node.id == this.highligtedNode) {
+          ctx.strokeStyle = 'red'
+          ctx.fillStyle = 'red'
+        } else {
+          if (this.highligtedNeighbours.includes(node.id)) {
+            ctx.strokeStyle = 'blue'
+            ctx.fillStyle = 'blue'
+          } else {
+            ctx.strokeStyle = 'black'
+            ctx.fillStyle = 'black'
+          }
+        }
         ctx.arc(node.pos.x, node.pos.y, 5, 0, 2 * Math.PI);
         ctx.fill()
         ctx.stroke()
@@ -99,6 +129,12 @@ export default {
       this.edges.forEach(edge => {
         const first = edge[0]
         const second = edge[1]
+        if (first == this.highligtedNode || second == this.highligtedNode) {
+          ctx.strokeStyle = 'green'
+
+        } else {
+          ctx.strokeStyle = 'black'
+        }
         const fNode = this.nodes[first]
         const sNode = this.nodes[second]
         ctx.beginPath();
@@ -139,6 +175,9 @@ export default {
         })
         .filter(t => t[0] != t[1])
         .filter(distinctEdge)
+    },
+    findNeighbours(edges, node) {
+      return edges.filter(e => e.includes(node.id)).reduce((acc, val) => acc.concat(val), []).filter(num => num != node.id)
     }
   },
   beforeDestroy() {
