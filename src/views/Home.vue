@@ -1,7 +1,7 @@
 <template>
 <div class="home">
   <div style="position: absolute; display: flex; flex-direction: column;">
-    <button type="button" name="button" @click="init()">Reset</button>
+    <button type="button" name="button" @click="reset()">Reset</button>
     <div>
       TotalSpeed: {{totalSpeed}}
     </div>
@@ -76,17 +76,17 @@ export default {
   },
   methods: {
     reset() {
-      this.nodes = initNodes(nodesSize, {
+      this.nodes = initNodes(NODESSIZE, {
         height: this.windowHeight,
         width: this.windowWidth
       })
+      this.edges = this.getRandomEdges(EDGESSIZE, NODESSIZE)
+      this.draw()
     },
     init() {
       window.addEventListener('resize', this.resize);
 
-      const nodesSize = NODESSIZE
-      const edgesSize = EDGESSIZE
-      this.edges = this.getRandomEdges(edgesSize, nodesSize)
+      this.edges = this.getRandomEdges(EDGESSIZE, NODESSIZE)
       const canvas = this.$refs['canvas']
       this.canvas = canvas
       this.image = this.$refs['image']
@@ -109,7 +109,7 @@ export default {
           }
         }
       }
-      this.nodes = initNodes(nodesSize, {
+      this.nodes = initNodes(NODESSIZE, {
         height: this.windowHeight,
         width: this.windowWidth
       })
