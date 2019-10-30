@@ -108,13 +108,41 @@ export default {
         height: this.windowHeight,
         width: this.windowWidth
       }, this.edges)
-      this.nodes.forEach(node => {
+
+      const highligtedNode = this.highligtedNode
+      const highligtedNeighbours = this.highligtedNeighbours
+
+      this.drawEdges(ctx, this.nodes, this.edges, {
+        highligtedNode,
+        highligtedNeighbours
+      })
+      this.drawNodes(ctx, this.nodes, {
+        highligtedNode,
+        highligtedNeighbours
+      })
+
+      this.totalSpeed = totalSpeed(this.nodes)
+      this.moySpeed = moySpeed(this.nodes)
+      this.minSpeed = minSpeed(this.nodes)
+      this.maxSpeed = maxSpeed(this.nodes)
+
+      if (this.maxSpeed == 0) {
+        console.log('STAAAAAAAAHP')
+        return
+      }
+      window.requestAnimationFrame(this.draw)
+    },
+    drawNodes(ctx, nodes, {
+      highligtedNode,
+      highligtedNeighbours
+    }) {
+      nodes.forEach(node => {
         ctx.beginPath();
-        if (node.id == this.highligtedNode) {
+        if (node.id == highligtedNode) {
           ctx.strokeStyle = 'red'
           ctx.fillStyle = 'red'
         } else {
-          if (this.highligtedNeighbours.includes(node.id)) {
+          if (highligtedNeighbours.includes(node.id)) {
             ctx.strokeStyle = 'blue'
             ctx.fillStyle = 'blue'
           } else {
@@ -126,32 +154,28 @@ export default {
         ctx.fill()
         ctx.stroke()
       })
-      this.edges.forEach(edge => {
+    },
+    drawEdges(ctx, nodes, edges, {
+      highligtedNode,
+      highligtedNeighbours
+    }) {
+      edges.forEach(edge => {
         const first = edge[0]
         const second = edge[1]
-        if (first == this.highligtedNode || second == this.highligtedNode) {
+        if (first == highligtedNode || second == highligtedNode) {
           ctx.strokeStyle = 'green'
 
         } else {
           ctx.strokeStyle = 'black'
         }
-        const fNode = this.nodes[first]
-        const sNode = this.nodes[second]
+        const fNode = nodes[first]
+        const sNode = nodes[second]
         ctx.beginPath();
         ctx.moveTo(fNode.pos.x, fNode.pos.y);
         ctx.lineTo(sNode.pos.x, sNode.pos.y);
         ctx.stroke()
       })
-      this.totalSpeed = totalSpeed(this.nodes)
-      this.moySpeed = moySpeed(this.nodes)
-      this.minSpeed = minSpeed(this.nodes)
-      this.maxSpeed = maxSpeed(this.nodes)
 
-      if (this.maxSpeed == 0) {
-        console.log('STAAAAAAAAHP')
-        return
-      }
-      window.requestAnimationFrame(this.draw)
     },
     resize() {
       this.getWindowWidth()
