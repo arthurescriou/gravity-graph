@@ -1,11 +1,11 @@
 const FRICTION = 0.1
-const K = 20
-const DISTMIN = 100
+const K = 1
+const DISTMIN = 200
 const A = 0.000001
-const NEGLICT = 0.01
+const NEGLICT = 0.1
 
-const NODESSIZE = 40
-const EDGESSIZE = 50
+const NODESSIZE = 60
+const EDGESSIZE = 90
 
 export {
   FRICTION,
