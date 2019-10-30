@@ -105,6 +105,9 @@ const vectorFriction = ({x, y}) => ({
 })
 
 const friction = (val) => {
+  if (true) {
+    return val * 0.75
+  }
   if (val < FRICTION / 2) {
     return val * 0.95
   }
