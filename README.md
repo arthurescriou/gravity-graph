@@ -1,5 +1,8 @@
 # gravity-graph
 
+Display graph with gravity in HTML5 canvas.
+
+
 ## Project setup
 ```
 yarn install
@@ -15,5 +18,5 @@ yarn run serve
 yarn run build
 ```
 
-###C
+### Change values
 You can changes the values in src/values.js
