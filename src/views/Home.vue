@@ -1,6 +1,7 @@
 <template>
 <div class="home">
   <div style="position: absolute; display: flex; flex-direction: column;">
+    <button type="button" name="button" @click="init()">Reset</button>
     <div>
       TotalSpeed: {{totalSpeed}}
     </div>
@@ -74,6 +75,12 @@ export default {
     }
   },
   methods: {
+    reset() {
+      this.nodes = initNodes(nodesSize, {
+        height: this.windowHeight,
+        width: this.windowWidth
+      })
+    },
     init() {
       window.addEventListener('resize', this.resize);
 
