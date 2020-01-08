@@ -72,6 +72,7 @@ export default {
       maxSpeed: 0,
       highligtedNode: -1,
       highligtedNeighbours: [],
+      stap: false,
     }
   },
   methods: {
@@ -143,6 +144,7 @@ export default {
 
       if (this.maxSpeed == 0) {
         console.log('STAAAAAAAAHP')
+        this.stap = true
         return
       }
       window.requestAnimationFrame(this.draw)
@@ -197,6 +199,8 @@ export default {
       this.getWindowHeight()
       this.canvas.width = this.windowWidth
       this.canvas.height = this.windowHeight
+      if (this.stap)
+        this.draw()
     },
     getWindowWidth(event) {
       this.windowWidth = document.documentElement.clientWidth;
